@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Currency Converter</title>
+    </head>
+    
+    <body>
+        <label>
+            <strong>From:</strong> <select id="from" type="text"></select>
+        </label>
+        <br/><br/>
+        <label>
+            <strong>To:</strong> <select id="to" type="text"></select>
+        </label>
+        <br/><br/>
+        <label>
+            <strong>Value:</strong> <input id="amount" type="tel">
+        </label>
+        <br/><br/>
+        <button type="submit" onclick="convert();">Convert</button>
+        <br/><br/>
+        <strong>Result: <span id="converted_val"></span></strong>
+    </body>
+
+    <script>
+        function constructCurrencyList(data) {
+            if(data != undefined || data != '' && data.success == "true") {
+                var obj_currencies = data.currencies != undefined ? data.currencies : undefined;
+                var select_from = document.getElementById('from');
+                var select_to = document.getElementById('to');
+
+                for(var property in obj_currencies) {
+                    var currency_code = property;
+                    var currency_name = obj_currencies[property];
+
+                    var option_currency = document.createElement('option');
+                    option_currency.setAttribute('value', currency_code);
+                    option_currency.innerText = currency_name;
+                    select_from.append(option_currency);
+                }
+                select_to.innerHTML = select_from.innerHTML;
+            }
+        }
+
+        function getReqHeader() {
+            var myHeaders = new Headers();
+            myHeaders.append("apikey", "PuDJsrY2PpyF0oDzARD5qw7Mco9WX9w5");
+            return myHeaders;
+        }
+
+        function getCurrencyList() {
+            var myHeaders = getReqHeader();
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow',
+                headers: myHeaders
+            };
+            fetch("https://api.apilayer.com/currency_data/list", requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    // constructing from, to list
+                    constructCurrencyList(JSON.parse(result));
+                })
+                .catch(error => alert('error', error));
+           
+        }
+        getCurrencyList();
+
+        function convert() {
+            var from = document.getElementById('from').value;
+            var to = document.getElementById('to').value;
+            var amount = document.getElementById('amount').value;
+
+            var myHeaders = getReqHeader();
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow',
+                headers: myHeaders
+            };
+            fetch(`https://api.apilayer.com/currency_data/convert?to=${to}&from=${from}&amount=${amount}`, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    console.log(result);
+                    document.getElementById("converted_val").innerText = '' + JSON.parse(result).result;
+                })
+                .catch(error => alert('error', error));
+            
+        }
+    </script>
+</html>

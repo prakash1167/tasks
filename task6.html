@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Destination Date</title>
+    <style rel="stylesheet">
+        body {
+            background-color: #252929;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <label>Start:&nbsp;
+        <select id="start"></select>
+    </label>
+    <br /><br />
+    <label>End:&nbsp;
+        <select id="end"></select>
+    </label>
+    <br /><br />
+    <label>Start Date:&nbsp;
+        <input id="start_date" type="date" />
+    </label>
+    <br /><br />
+    <button onclick="getDestinationDate()">Get destination date</button>
+    <br /><br />
+    <h2>Arrive on: <em><span id="result"></em></span></h2>
+</body>
+
+<script>
+    var travel_details = {
+        Tirunelveli: [
+            { destination: "Madurai", distance: 2 }
+        ],
+        Madurai: [
+            { destination: "Tirunelveli", distance: 2 }, 
+            { destination: "Trichy",  distance: 2 }, 
+            { destination: "Coimbatore",  distance: 3 }, 
+            { destination: "Salem",  distance: 3 }
+        ],
+        Trichy: [
+            { destination: "Chennai", distance: 3 }
+        ],
+        Coimbatore: [
+            { destination: "Chennai", distance: 3 }, 
+            { destination: "Bangalore", distance: 3 }
+        ],
+        Salem: [
+            { destination: "Bangalore", distance: 2 }
+        ],
+        Chennai: [
+            { destination: "Bangalore", distance: 2 }, 
+            { destination: "Mumbai", distance: 5 }
+        ],
+        Bangalore: [
+            { destination: "Mumbai", distance: 3 }
+        ],
+        Chennai: [
+            { destination: "Mumbai", distance: 5 }
+        ],
+    };
+
+    function getDestinationDate() {
+        var start = document.getElementById('start').value;
+        var end = document.getElementById('end').value;
+        var startDate = document.getElementById('start_date').value;
+
+        if (start == end) {
+            alert('Please select different places');
+            return;
+        }
+        if (startDate == undefined || startDate == "") {
+            alert('Invalid start date');
+            return;
+        }
+
+        var noOfDays = 0;
+        var intermediate = start; // start -> intermidiate -> destination
+        while (intermediate != end) {
+            if (travel_details.hasOwnProperty(intermediate)) {
+                var dest_array = travel_details[intermediate];
+                for(var i = 0; i < dest_array.length; i++) {
+                    
+                    var place = dest_array[i];
+                    if(place.destination=end){
+                    noOfDays += place.distance;
+                    intermediate = place.destination;
+                }
+                }
+            } else {
+                document.getElementById('result').innerText = 'Route not found!!!';
+                return;
+            }
+        }
+
+        var date = new Date(startDate);
+        while (noOfDays > 1) {
+            var currDay = date.getDay();
+            if (currDay != 0 && currDay != 6) {
+                noOfDays--;
+            }
+            date.setDate(date.getDate() + 1);
+        }
+        if (date.getDay() == 0) {
+            date.setDate(date.getDate() + 1);
+        } else if (date.getDay() == 6) {
+            date.setDate(date.getDate() + 2);
+        }
+        document.getElementById('result').innerText = date;
+        return;
+    }
+
+    function populateDropDown() {
+        var places = ["Tirunelveli", "Madurai", "Trichy", "Coimbatore", "Salem", "Chennai", "Bangalore","Mumbai"];
+        var select_start = document.getElementById('start');
+        var select_end = document.getElementById('end');
+        for (var i = 0; i < places.length; i++) {
+            var option_place = document.createElement('option');
+            option_place.setAttribute("value", places[i]);
+            option_place.innerText = places[i];
+            select_start.append(option_place);
+        }
+        select_end.innerHTML = select_start.innerHTML;
+    }
+    populateDropDown();
+</script>
+
+</html>

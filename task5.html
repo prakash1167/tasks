@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .active {
+                color: orange;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="rating" onclick="processRating(event)">
+            <span id="1">&#9734</span>
+            <span id="2">&#9734</span>
+            <span id="3">&#9734</span>
+            <span id="4">&#9734</span>
+            <span id="5">&#9734</span>
+        </div>
+    </body>
+    <script>
+        function processRating(event) {
+            event.stopPropagation();
+            var target = event.target;
+            var target_id = target.getAttribute('id');
+            for(var i = 1; i <= 5; i++) {
+                if(i <= target_id) {
+                    document.getElementById('' + i).setAttribute('class', 'active');
+                    document.getElementById('' + i).innerHTML = '&#9733';
+                } else {
+                    document.getElementById('' + i).removeAttribute('class');
+                    document.getElementById('' + i).innerHTML = '&#9734';
+                }
+            }
+        }
+    </script>
+</html>
